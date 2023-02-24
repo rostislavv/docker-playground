@@ -1,0 +1,35 @@
+version: "3"
+services:
+  api:
+    build: ./api
+    ports:
+      - 8080:8080
+    environment:
+      - HOST=api
+      - PORT=8080
+      - MONGO_URL=mongodb://api_db:27017/api
+  api_db:
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb:/data/db
+  frontend:
+    build: ./frontend
+    container_name: frontend-app
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+  nginx:
+    image: nginx:1-alpine
+    container_name: websystem-docker-demo-nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/conf.d/nginx.conf
+    depends_on:
+      - frontend
+      - api
+
+volumes:
+ mongodb:

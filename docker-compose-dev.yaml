@@ -1,0 +1,50 @@
+version: "3"
+services:
+  api:
+    build: ./api
+    container_name: api-app-dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./api:/usr/src/app
+    environment:
+      - HOST=api
+      - PORT=8080
+      - MONGO_URL=mongodb://api_db:27017/api
+    command: ["npm", "run", "dev"]
+    depends_on:
+      - api_db
+  api_db:
+    image: mongo
+    container_name: mongo-app-dev
+    ports:
+      - 27017:27017
+    volumes:
+      - /data/db
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: frontend-app-dev
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - PORT=80
+    volumes:
+      - ./frontend:/usr/src/app
+      - /app/node_modules
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+  nginx:
+    image: nginx:1-alpine
+    container_name: websystem-docker-demo-nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/nginx.conf
+      #- ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - frontend
+      - api
+
+
