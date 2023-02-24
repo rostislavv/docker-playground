@@ -42,7 +42,6 @@ services:
       - 80:80
     volumes:
       - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/nginx.conf
-      #- ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf
     depends_on:
       - frontend
       - api
