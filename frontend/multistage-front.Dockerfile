@@ -12,8 +12,12 @@ COPY . .
 RUN npm run build
 
 # ========= RUN =========
-FROM nginx:1.17-alpine
+FROM nginx:1.17.10
 
-COPY conf/nginx.conf /etc/nginx/nginx.conf
+WORKDIR /
+ADD startup.sh startup.sh
+RUN chmod +x startup.sh
+
 COPY --from=builder /app/build /usr/share/nginx/html
 
+CMD ["./startup.sh"]

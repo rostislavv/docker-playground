@@ -12,6 +12,8 @@ services:
       - PORT=8080
       - MONGO_URL=mongodb://api_db:27017/api
     command: ["npm", "run", "dev"]
+    networks:
+      - api-network
     depends_on:
       - api_db
   api_db:
@@ -19,6 +21,8 @@ services:
     container_name: mongo-app-dev
     ports:
       - 27017:27017
+    networks:
+      - api-network
     volumes:
       - /data/db
   frontend:
@@ -32,6 +36,8 @@ services:
     volumes:
       - ./frontend:/usr/src/app
       - /app/node_modules
+    networks:
+      - api-network
     restart: unless-stopped
     stdin_open: true
     tty: true
@@ -42,8 +48,13 @@ services:
       - 80:80
     volumes:
       - ./nginx/nginx.dev.conf:/etc/nginx/conf.d/nginx.conf
+    networks:
+      - api-network
     depends_on:
       - frontend
       - api
 
 
+networks:
+  api-network:
+    driver: bridge # a user defined bridge is required; the default bridge network doesn't support name resolution

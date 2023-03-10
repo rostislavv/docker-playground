@@ -4,11 +4,11 @@ const express = require('express');
 const app = express();
 const { User } = require('./models/user');
 
-app.get('/test', async (req, res) => {
+app.get('/api/test', async (req, res) => {
   res.send('Server is working correctly');
 })
 
-app.get('/users', async (req, res) => {
+app.get('/api/users', async (req, res) => {
   const user = new User({ userName: 'NewUser' + Math.random() * 100});
   await user.save()
   const users = await User.find();

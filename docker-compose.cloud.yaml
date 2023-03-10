@@ -1,0 +1,38 @@
+version: "3"
+services:
+  api:
+    # this image should be available for the service system of selected cloud provider
+    # hosted on docker.hub or aws ecr or anything else
+    image: 114257506675.dkr.ecr.eu-north-1.amazonaws.com/rosvpersonal:api-webapp
+    ports:
+      - 8080:8080
+    environment:
+      - HOST=api
+      - PORT=8080
+      - MONGO_URL=mongodb://api_db:27017/api
+    networks:
+      - api-network
+    depends_on:
+      - api_db
+
+  api_db:
+    image: registry.hub.docker.com/library/mongo
+    networks:
+      - api-network
+
+    # this image should be available for the service system of selected cloud provider
+    # hosted on docker.hub or aws ecr or anything else
+  frontend:
+    image: 114257506675.dkr.ecr.eu-north-1.amazonaws.com/rosvpersonal:nginx-webapp
+    ports:
+      - 80:80
+    container_name: frontend-app
+    networks:
+      - api-network
+    stdin_open: true
+    depends_on:
+      - api
+
+networks:
+  api-network:
+    driver: bridge # a user defined bridge is required; the default bridge network doesn't support name resolution
